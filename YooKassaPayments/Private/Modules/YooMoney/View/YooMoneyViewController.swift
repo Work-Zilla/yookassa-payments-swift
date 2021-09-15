@@ -234,7 +234,8 @@ final class YooMoneyViewController: UIViewController, PlaceholderProvider {
     override func loadView() {
         view = UIView()
         view.setStyles(UIView.Styles.grayBackground)
-        view.addGestureRecognizer(viewTapGestureRecognizer)
+        //Temporary removed gesture recognizer because it blocks uiswitch in our application
+        //view.addGestureRecognizer(viewTapGestureRecognizer)
         navigationItem.title = Localized.title
 
         termsOfServiceLinkedTextView.delegate = self

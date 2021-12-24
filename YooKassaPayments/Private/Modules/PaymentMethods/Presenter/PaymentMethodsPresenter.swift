@@ -267,6 +267,7 @@ extension PaymentMethodsPresenter: PaymentMethodsViewOutput {
                let returnUrl = makeSberpayReturnUrl() {
                 openSberpayModule(
                     paymentOption: paymentOption,
+                    clientSavePaymentMethod: savePaymentMethod,
                     isSafeDeal: isSafeDeal,
                     needReplace: needReplace,
                     returnUrl: returnUrl
@@ -496,7 +497,8 @@ extension PaymentMethodsPresenter: PaymentMethodsViewOutput {
             userPhoneNumber: userPhoneNumber,
             isBackBarButtonHidden: needReplace,
             customerId: customerId,
-            isSafeDeal: isSafeDeal
+            isSafeDeal: isSafeDeal,
+            clientSavePaymentMethod: savePaymentMethod
         )
         router.openSberbankModule(
             inputData: inputData,
@@ -506,6 +508,7 @@ extension PaymentMethodsPresenter: PaymentMethodsViewOutput {
 
     private func openSberpayModule(
         paymentOption: PaymentOption,
+        clientSavePaymentMethod: SavePaymentMethod,
         isSafeDeal: Bool,
         needReplace: Bool,
         returnUrl: String
@@ -514,6 +517,7 @@ extension PaymentMethodsPresenter: PaymentMethodsViewOutput {
         let feeViewModel = priceViewModelFactory.makeFeePriceViewModel(paymentOption)
         let inputData = SberpayModuleInputData(
             paymentOption: paymentOption,
+            clientSavePaymentMethod: clientSavePaymentMethod,
             clientApplicationKey: clientApplicationKey,
             tokenizationSettings: tokenizationSettings,
             testModeSettings: testModeSettings,
@@ -1317,8 +1321,7 @@ extension PaymentMethodsPresenter: TokenizationModuleInput {
         let inputData = CardSecModuleInputData(
             requestUrl: requestUrl,
             redirectUrl: GlobalConstants.returnUrl,
-            isLoggingEnabled: isLoggingEnabled,
-            isConfirmation: false
+            isLoggingEnabled: isLoggingEnabled
         )
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -1351,8 +1354,7 @@ extension PaymentMethodsPresenter: TokenizationModuleInput {
             let inputData = CardSecModuleInputData(
                 requestUrl: confirmationUrl,
                 redirectUrl: GlobalConstants.returnUrl,
-                isLoggingEnabled: isLoggingEnabled,
-                isConfirmation: true
+                isLoggingEnabled: isLoggingEnabled
             )
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
@@ -1368,20 +1370,9 @@ extension PaymentMethodsPresenter: TokenizationModuleInput {
 // MARK: - CardSecModuleOutput
 
 extension PaymentMethodsPresenter: CardSecModuleOutput {
-    func didSuccessfullyPassedCardSec(
-        on module: CardSecModuleInput,
-        isConfirmation: Bool
-    ) {
+    func didSuccessfullyPassedCardSec(on module: CardSecModuleInput) {
         interactor.stopAnalyticsService()
-        if isConfirmation {
-            tokenizationModuleOutput?.didSuccessfullyConfirmation(
-                paymentMethodType: .bankCard
-            )
-        } else {
-            tokenizationModuleOutput?.didSuccessfullyPassedCardSec(
-                on: self
-            )
-        }
+        tokenizationModuleOutput?.didSuccessfullyConfirmation(paymentMethodType: .bankCard)
     }
 
     func didPressCloseButton(

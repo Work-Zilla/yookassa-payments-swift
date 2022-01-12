@@ -153,7 +153,7 @@ final class BankCardViewController: UIViewController {
     override func loadView() {
         view = UIView()
         view.setStyles(UIView.Styles.grayBackground)
-        view.addGestureRecognizer(viewTapGestureRecognizer)
+        //view.addGestureRecognizer(viewTapGestureRecognizer)
 
         navigationItem.title = Localized.title
 
